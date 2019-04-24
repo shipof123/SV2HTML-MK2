@@ -3,11 +3,21 @@
 #include <fstream>
 #include <string>
 #include <vector>
+#include <map>
+#include <utility>
+
+
 template <char delim>
 struct SV {
-  SV(std::string filename) {
+  SV(std::string filename, std::map<std::string, std::string> opts) {
     std::ifstream in(filename);
-    std::cout << "<table>\n";
+    
+    std::string opt_string = "";
+    for(const std::pair<std::string, std::string>& p : opts) {
+        opt_string += p.first + "=" + p.second + ' ';
+    }
+    
+    std::cout << "<table " + opt_string + ">\n";
     std::string line, value;
     while(getline(in, line)) {
       auto linestream = std::istringstream(line);
@@ -22,5 +32,9 @@ struct SV {
 };
 
 int main(){
-    auto tsv = SV<' '>("new.tsv");
+    std::map<std::string, std::string> opts = {
+        {"border", "1"},
+        {"style", "\"color:red\""}
+    };
+    auto tsv = SV<'-'>("new.tsv", opts);
 }
